@@ -1,0 +1,96 @@
+<html>
+
+<div id="app">
+<users-list v-bind:list="users"></users-list>
+</div>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <template id="users-component">
+            <table>
+              <tr v-for="user in users" v-bind:key="user.id">
+                <td>
+                  {{ user.firstName }}
+                </td>
+                <td>
+                  {{ user.lastName }}
+                </td>
+                <td>
+                  <button type="button" v-on:click="remove(user.id)">
+                    X
+                  </button>
+                </td>
+              </tr>
+            </table>
+    </template>
+    <template id="userform-component">
+
+    </template>
+
+
+
+<script>
+
+  var userForm = {
+    name: 'UserForm',
+    template: '#userform-component',
+    props: {
+      user: Object,
+      required: true
+    },
+    data: function(){
+        return {
+            user: {}
+        }
+    }
+  }
+
+  var usersList = {
+    name: 'UsersList',
+    template: '#users-component',
+    props: {
+      // Ждём входными параметрами массив с пользователями
+      list: {
+        type: Array,
+        required: true
+      }
+    },
+    data: function(){
+       return {
+        users: []
+       } 
+    },
+    methods: {
+      remove(name) {
+        console.log('Из компонента таблицы генерируем событие на удаление:', id);
+        this.$emit('remove-user', id);
+      }
+    },
+    mounted: function() {
+      var self = this
+      
+      axios.get("http://127.0.0.1:3000/users")
+      .then(function (response) {
+          self.users = response.data
+          console.log('паннные пользователей загруженны')
+      })
+      .catch(function (error) {
+            console.log(error);
+      })
+    
+    }
+  };
+
+
+window.app = new Vue({
+    el: "#app",
+    components: {
+      'users-list': usersList,
+      'user-form': userForm
+}
+})
+    </script>
+</body>
+</html>
